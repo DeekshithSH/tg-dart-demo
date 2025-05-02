@@ -1,0 +1,18 @@
+name: bot
+description: A sample command-line application.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.6.2
+
+# Add regular dependencies here.
+dependencies:
+  tg:
+    path: ./packages/tg
+  t:
+    path: ./packages/t
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.24.0
