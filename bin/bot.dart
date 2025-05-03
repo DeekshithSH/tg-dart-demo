@@ -1,6 +1,9 @@
-import 'conf.dart';
 import 'package:t/t.dart' as t;
 import 'package:bot/client.dart';
+
+final apiId = 0;
+final apiHash = "";
+final botAuthToken = "";
 
 Future<void> main() async {
   final session = TelegramSessionClient(apiId: apiId, apiHash: apiHash);
