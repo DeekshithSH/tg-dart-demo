@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:socks5_proxy/socks.dart';
 import 'package:t/t.dart' as t;
 import 'package:tg/tg.dart' as tg;
 
@@ -28,6 +29,13 @@ class TelegramSessionClient {
     print("Connecting to $ip:$port");
     _obf = tg.Obfuscation.random(false, 4);
     _socket = await Socket.connect(ip, port);
+    // final _socket = await SocksTCPClient.connect(
+    //   [
+    //     ProxySettings(InternetAddress.loopbackIPv4, 1080),
+    //   ],
+    //   InternetAddress(ip),
+    //   port,
+    // );
     print("Done");
     _sender = StreamController<Uint8List>();
     _receiver = StreamController<Uint8List>.broadcast();
@@ -89,6 +97,12 @@ class TelegramSessionClient {
 
       await connect(dc.ipAddress, dc.port);
       await Future.delayed(Duration(seconds: 1));
+      return await start(botToken: botToken);
+    } else if (auth.error?.errorCode == 420){
+      final match = RegExp(r'\d+').firstMatch(auth.error!.errorMessage);
+      final sleep_time = int.parse(match!.group(0)!);
+      print("sleeping for $sleep_time seconds");
+      await Future.delayed(Duration(seconds: sleep_time));
       return await start(botToken: botToken);
     } else {
       throw Exception("Unhandled Error: ${auth.error}");
