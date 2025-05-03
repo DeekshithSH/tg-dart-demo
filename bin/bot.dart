@@ -1,16 +1,16 @@
 import 'package:t/t.dart' as t;
 import 'package:bot/client.dart';
 
-final apiId = 0;
-final apiHash = "";
-final botAuthToken = "";
+final apiId = YOUR_API_ID;
+final apiHash = 'YOUR_API_HASH';
+final botToken = 'YOUR_BOT_TOKEN';
 
 Future<void> main() async {
   final session = TelegramSessionClient(apiId: apiId, apiHash: apiHash);
 
   await session.connect();
   await Future.delayed(Duration(seconds: 1));
-  await session.start(botToken: botAuthToken);
+  await session.start(botToken: botToken);
   print("Account authorized");
 
   final client = session.client;
