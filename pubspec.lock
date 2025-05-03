@@ -340,9 +340,10 @@ packages:
   t:
     dependency: "direct main"
     description:
-      path: "packages/t"
-      relative: true
-    source: path
+      name: t
+      sha256: e8ddaa7f71203904cc6bc8917f1cf6086f8952e270d37706ec4979d64c60332f
+      url: "https://pub.dev"
+    source: hosted
     version: "0.0.20"
   term_glyph:
     dependency: transitive
@@ -379,9 +380,10 @@ packages:
   tg:
     dependency: "direct main"
     description:
-      path: "packages/tg"
-      relative: true
-    source: path
+      name: tg
+      sha256: "64e5ed614bed41e1b834aeed5e88c88fa7918471bed68fbf0c4fbc0c656cfdfb"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.0.5"
   typed_data:
     dependency: transitive
