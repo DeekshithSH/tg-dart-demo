@@ -8,8 +8,8 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  tg: ^0.0.5
-  t: ^0.0.20
+  tg: ^0.0.7
+  t: ^0.0.22
   socks5_proxy: ^1.0.4
 
 dev_dependencies:
