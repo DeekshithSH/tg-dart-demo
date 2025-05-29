@@ -19,13 +19,13 @@ Setup Instructions
    dart pub get
    ```
 
-3. Update credentials
-   Open bin/bot.dart and update the following constants:
+3. Enter credentials
+   create .env file and enter the following values:
 
    ```
-   apiId = YOUR_API_ID;
-   apiHash = 'YOUR_API_HASH';
-   botToken = 'YOUR_BOT_TOKEN';
+   API_ID=YOUR_API_ID
+   API_HASH='YOUR_API_HASH'
+   BOT_TOKEN='YOUR_BOT_TOKEN'
    ```
 
    You can obtain

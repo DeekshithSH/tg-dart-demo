@@ -3,3 +3,10 @@
 .dart_tool/
 
 bin/conf.dart
+
+*.log
+*.session
+test*.py
+test*.dart
+session.json
+.env

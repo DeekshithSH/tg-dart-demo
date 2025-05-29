@@ -89,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
+  dotenv:
+    dependency: "direct main"
+    description:
+      name: dotenv
+      sha256: "379e64b6fc82d3df29461d349a1796ecd2c436c480d4653f3af6872eccbc90e1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.0"
   ffi:
     dependency: transitive
     description:
@@ -380,11 +388,12 @@ packages:
   tg:
     dependency: "direct main"
     description:
-      name: tg
-      sha256: "239126203ba92b40a8d29d15318fc97341c0f86ef138699068bf5205ea6b5868"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.7"
+      path: "."
+      ref: patch-3
+      resolved-ref: a2bc72c223feab7abf4b20b185ab7bff01e74096
+      url: "https://github.com/DeekshithSH/tg"
+    source: git
+    version: "0.0.8"
   typed_data:
     dependency: transitive
     description:
