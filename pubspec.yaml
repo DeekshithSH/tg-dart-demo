@@ -9,12 +9,11 @@ environment:
 # Add regular dependencies here.
 dependencies:
   # tg: ^0.0.7
-  tg:
+  tgram: 
     git:
-      url: https://github.com/DeekshithSH/tg
-      ref: patch-3
-    # path: ./packages/tg
-  t: ^0.0.24
+      url: "https://github.com/DeekshithSH/tgram"
+      ref: master
+  t: any
   socks5_proxy: ^1.0.4
   dotenv: ^4.2.0
 

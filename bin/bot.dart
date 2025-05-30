@@ -1,15 +1,13 @@
+import 'package:tgram/tgram.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:t/t.dart' as t;
-import 'package:bot/client.dart';
 import 'package:dotenv/dotenv.dart';
 
 var env = DotEnv(includePlatformEnvironment: true)..load();
 
-late final TelegramSessionClient session;
+late final TelegramClient tgclient;
 
 Future<void> main() async {
   if (!env.isEveryDefined(['API_ID', 'API_HASH', "BOT_TOKEN"])){
@@ -21,23 +19,31 @@ Future<void> main() async {
   final botToken = env['BOT_TOKEN']!;
 
   final sessionData = loadSession();
-  session = TelegramSessionClient(
+  tgclient = TelegramClient(
     apiId: apiId,
     apiHash: apiHash,
     onUpdate: handleUpdates,
     session: sessionData,
-    useSocks: true
+    useSocks: false
     );
 
-  await session.connect(t.DcOption(ipv6: false, mediaOnly: false, tcpoOnly: false, cdn: false, static: false, thisPortOnly: false, id: 1, ipAddress: "149.154.175.51", port: 443));
+  ProcessSignal.sigint.watch().listen((signal) async {
+    print('Received SIGINT, shutting down gracefully...');
+    await File("session.json").writeAsString(jsonEncode(tgclient.exportSession()));
+    await tgclient.close();
+    print('Cleanup done. Exiting.');
+    exit(0);
+  });
+
+  await tgclient.connect();
   await Future.delayed(Duration(seconds: 1));
   if(sessionData==null){
-    await session.start(botToken: botToken);
-    print("Account authorized");
+    print("Authenticating");
+    await tgclient.loginBot(botToken);
   }
-  print("Done");
+  print("Account authorized");
 
-  final client = session.client;
+  final client = tgclient.client;
   if (client == null) throw Exception("Client is null");
 
   final result = await client.users.getFullUser(id: t.InputUserSelf());
@@ -49,18 +55,10 @@ Future<void> main() async {
   } else {
     print("Could not fetch user info");
   }
-
-  ProcessSignal.sigint.watch().listen((signal) async {
-    print('Received SIGINT, shutting down gracefully...');
-    await File("session.json").writeAsString(jsonEncode(session.exportSession()));
-    await session.close();
-    print('Cleanup done. Exiting.');
-    exit(0);
-  });
-
 }
 
 void handleUpdates(t.UpdatesBase update) async{
+  print("Received update");
   if(update is t.Updates){
     for (final message in update.updates){
       if (message is t.UpdateNewMessage){
@@ -87,30 +85,14 @@ void handleUpdates(t.UpdatesBase update) async{
 }
 
 Future handleMessage(t.Message message, t.User? user, t.User chat) async{
-  final client = session.client;
+  final client = tgclient.client;
   if (client == null) return ;
-  await client.messages.sendMessage(
-    noWebpage: false,
-    silent: false,
-    background: false,
-    clearDraft: false,
-    noforwards: false,
-    updateStickersetsOrder: false,
-    invertMedia: false,
-    allowPaidFloodskip: false,
-    peer: t.InputPeerUser(userId: chat.id, accessHash: chat.accessHash ?? 0),
-    message: message.message,
-    randomId: generateRandomId()
+  await tgclient.forwardMessage(
+    fromPeer: t.InputPeerUser(userId: chat.id, accessHash: chat.accessHash ?? 0),
+    toPeer: t.InputPeerUser(userId: chat.id, accessHash: chat.accessHash ?? 0),
+    msgIds: [message.id],
+    hideSender: true
   );
-}
-
-int generateRandomId() {
-  final random = Random.secure();
-  final buffer = Uint8List(8);
-  for (int i = 0; i < 8; i++) {
-    buffer[i] = random.nextInt(256);
-  }
-  return ByteData.sublistView(buffer).getInt64(0, Endian.little);
 }
 
 Map<String, dynamic>? loadSession() {
