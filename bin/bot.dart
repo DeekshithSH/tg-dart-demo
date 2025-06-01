@@ -8,6 +8,7 @@ import 'package:dotenv/dotenv.dart';
 var env = DotEnv(includePlatformEnvironment: true)..load();
 
 late final TelegramClient tgclient;
+bool _isClosing = false;
 
 Future<void> main() async {
   if (!env.isEveryDefined(['API_ID', 'API_HASH', "BOT_TOKEN"])){
@@ -29,17 +30,20 @@ Future<void> main() async {
 
   ProcessSignal.sigint.watch().listen((signal) async {
     print('Received SIGINT, shutting down gracefully...');
-    await File("session.json").writeAsString(jsonEncode(tgclient.exportSession()));
-    await tgclient.close();
-    print('Cleanup done. Exiting.');
-    exit(0);
+    if (!_isClosing){
+      _isClosing=true;
+      await File("session.json").writeAsString(jsonEncode(tgclient.exportSession()));
+      await tgclient.close();
+      print('Cleanup done. Exiting.');
+      exit(0);
+    }
   });
 
   await tgclient.connect();
   await Future.delayed(Duration(seconds: 1));
   if(sessionData==null){
     print("Authenticating");
-    await tgclient.loginBot(botToken);
+    await tgclient.login(botToken: botToken);
   }
   print("Account authorized");
 
@@ -52,6 +56,7 @@ Future<void> main() async {
     final me = user.users[0] as t.User;
     print("Hello, I'm ${me.firstName}");
     print("You can find me using: @${me.username}");
+    print("User DC ID: ${tgclient.dcId}");
   } else {
     print("Could not fetch user info");
   }
@@ -59,6 +64,7 @@ Future<void> main() async {
 
 void handleUpdates(t.UpdatesBase update) async{
   print("Received update");
+  // print(update);
   if(update is t.Updates){
     for (final message in update.updates){
       if (message is t.UpdateNewMessage){
@@ -85,14 +91,34 @@ void handleUpdates(t.UpdatesBase update) async{
 }
 
 Future handleMessage(t.Message message, t.User? user, t.User chat) async{
-  final client = tgclient.client;
-  if (client == null) return ;
-  await tgclient.forwardMessage(
+  final c = tgclient.client!;
+  final msgIds=[message.id];
+  await c.messages.forwardMessages(
+    silent: false,
+    background: false,
+    withMyScore: false,
+    dropAuthor: true,
+    dropMediaCaptions: false,
+    noforwards: false,
+    allowPaidFloodskip: false,
     fromPeer: t.InputPeerUser(userId: chat.id, accessHash: chat.accessHash ?? 0),
-    toPeer: t.InputPeerUser(userId: chat.id, accessHash: chat.accessHash ?? 0),
-    msgIds: [message.id],
-    hideSender: true
+    id: msgIds,
+    randomId: [tgclient.randomId],
+    // randomId: msgIds.map((_) => tgclient.randomId).toList(),
+    toPeer: t.InputPeerUser(userId: chat.id, accessHash: chat.accessHash ?? 0)
   );
+  final media = message.media;
+  if (media != null){
+    if(media is t.MessageMediaDocument) {
+      final document = media.document! as t.Document;
+      await tgclient.downloadMedia(location: t.InputDocumentFileLocation(
+        id: document.id,
+        accessHash: document.accessHash,
+        fileReference: document.fileReference,
+        thumbSize: ''
+      ), dcId: document.dcId, size: document.size, path: document.id.toString());
+    }
+  }
 }
 
 Map<String, dynamic>? loadSession() {

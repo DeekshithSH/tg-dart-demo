@@ -369,6 +369,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: "69fe30f3a8b04a0be0c15ae6490fc859a78ef4c43ae2dd5e8a623d45bfcf9225"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.0+3"
   t:
     dependency: "direct main"
     description:
@@ -414,7 +422,7 @@ packages:
     description:
       path: "."
       ref: patch-3
-      resolved-ref: "6bfdf0b6c223bdd800006e2604430fefe65b83c4"
+      resolved-ref: ed3fdea71ad059320e75f6a0e9b3f348b26fa723
       url: "https://github.com/DeekshithSH/tg"
     source: git
     version: "0.0.8"
@@ -423,7 +431,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "6c3a6ea8e95317ba117bc0d382984ad1b3331cfd"
+      resolved-ref: e2a5d9e0f8bee2f14e2b2842df397b63761d5173
       url: "https://github.com/DeekshithSH/tgram"
     source: git
     version: "0.0.1"
